@@ -1,3 +1,4 @@
+const pool = require("../utils/database");
 exports.updateAvatarUrl = async (req, res) => {
   const { email, avatar_url } = req.body;
   console.log("avatar", req.body);
