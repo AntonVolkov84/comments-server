@@ -8,7 +8,7 @@ exports.addToUsers = async (req, res) => {
   }
 
   try {
-    const user = new User(email, username, avatar_url);
+    const user = new User(email, username, avatar_url, homepage);
     const savedUser = await user.save(pool);
     res.status(201).json(savedUser);
   } catch (error) {
