@@ -1,7 +1,7 @@
 const pool = require("../utils/database");
 const User = require("../models/userModel");
 exports.addToUsers = async (req, res) => {
-  const { email, username, avatar_url } = req.body;
+  const { email, username, avatar_url, homepage } = req.body;
 
   if (!email || !username) {
     return res.status(400).json({ error: "Required fields missing" });

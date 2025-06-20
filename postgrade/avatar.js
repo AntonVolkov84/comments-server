@@ -1,7 +1,7 @@
 const pool = require("../utils/database");
 exports.updateAvatarUrl = async (req, res) => {
   const { email, avatar_url } = req.body;
-  console.log("avatar", req.body);
+
   if (!email || !avatar_url) {
     return res.status(400).json({ error: "Email and avatar_url are required" });
   }
