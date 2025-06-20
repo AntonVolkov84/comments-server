@@ -1,11 +1,13 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const http = require("http");
 const WebSocket = require("ws");
 const helmet = require("helmet");
 const { deleteImageFromCloudinary } = require("./utils/cloudinary");
 
 const app = express();
+app.use(cors());
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 app.use(helmet());
