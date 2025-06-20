@@ -1,5 +1,5 @@
 class User {
-  constructor(email, username, avatar_url, created_at = new Date()) {
+  constructor(email, username, avatar_url = null, created_at = new Date()) {
     this.email = email;
     this.username = username;
     this.avatar_url = avatar_url;

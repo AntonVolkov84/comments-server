@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 exports.addToUsers = async (req, res) => {
   const { email, username, avatar_url } = req.body;
 
-  if (!email || !username || !avatar_url) {
+  if (!email || !username) {
     return res.status(400).json({ error: "Required fields missing" });
   }
 
