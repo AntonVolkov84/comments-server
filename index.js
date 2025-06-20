@@ -13,7 +13,7 @@ app.use(express.json());
 
 app.delete("/delete-image", deleteImageFromCloudinary);
 
-require("./websocket")(wss);
+require("./websocket/websocket")(wss);
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
