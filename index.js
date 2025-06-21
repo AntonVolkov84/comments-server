@@ -8,6 +8,7 @@ const pool = require("./utils/database");
 const { deleteImageFromCloudinary } = require("./utils/cloudinary");
 const { addToUsers } = require("./postgrade/users");
 const { updateAvatarUrl } = require("./postgrade/avatar");
+const base = require("./postgrade/base");
 
 const app = express();
 app.use(cors());
@@ -19,6 +20,7 @@ app.use(express.json());
 app.delete("/delete-image", deleteImageFromCloudinary);
 app.post("/users", addToUsers);
 app.put("/users/avatar", updateAvatarUrl);
+app.post("/user/by-email", base.getUserId);
 
 require("./websocket/websocket")(wss);
 
