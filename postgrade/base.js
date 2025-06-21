@@ -24,7 +24,19 @@ const getUserId = async (req, res) => {
 
 const getPosts = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM posts ORDER BY created_at DESC");
+    const result = await pool.query(`
+      SELECT 
+        posts.id,
+        posts.user_id,
+        posts.text,
+        posts.likescount,
+        posts.created_at,
+        users.nickname,
+        users.avatar_url
+      FROM posts
+      JOIN users ON posts.user_id = users.id
+      ORDER BY posts.created_at DESC
+    `);
     res.json(result.rows);
   } catch (error) {
     console.error("DB fetch posts error:", error);
@@ -37,21 +49,31 @@ const createPost = async (req, res, wss) => {
   if (!user_id || !text) {
     return res.status(400).json({ error: "user_id and text are required" });
   }
+
   try {
-    const result = await pool.query(
-      `INSERT INTO posts (user_id, text,  likescount)
+    const insertResult = await pool.query(
+      `INSERT INTO posts (user_id, text, likescount)
        VALUES ($1, $2, 0)
        RETURNING *`,
       [user_id, text]
     );
-    const newPost = result.rows[0];
+
+    const insertedPost = insertResult.rows[0];
+    const userResult = await pool.query(`SELECT nickname, avatar_url FROM users WHERE id = $1`, [user_id]);
+    const user = userResult.rows[0];
+
+    const fullPost = {
+      ...insertedPost,
+      nickname: user.nickname,
+      avatar_url: user.avatar_url,
+      homepage: user.homepage || null,
+    };
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: "new_post", data: newPost }));
+        client.send(JSON.stringify({ type: "new_post", data: fullPost }));
       }
     });
-
-    res.status(201).json(newPost);
+    res.status(201).json(fullPost);
   } catch (error) {
     console.error("DB insert error:", error.message);
     res.status(500).json({ error: "Internal server error" });
