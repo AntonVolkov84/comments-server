@@ -33,7 +33,8 @@ const getPosts = async (req, res) => {
         posts.created_at,
         users.username,
         users.avatar_url,
-        users.homepage
+        users.homepage,
+        users.email
       FROM posts
       JOIN users ON posts.user_id = users.id
       ORDER BY posts.created_at DESC
@@ -60,7 +61,9 @@ const createPost = async (req, res, wss) => {
     );
 
     const insertedPost = insertResult.rows[0];
-    const userResult = await pool.query(`SELECT username, avatar_url, homepage FROM users WHERE id = $1`, [user_id]);
+    const userResult = await pool.query(`SELECT username, avatar_url, email, homepage FROM users WHERE id = $1`, [
+      user_id,
+    ]);
     const user = userResult.rows[0];
 
     const fullPost = {
@@ -68,6 +71,7 @@ const createPost = async (req, res, wss) => {
       username: user.username,
       avatar_url: user.avatar_url,
       homepage: user.homepage || null,
+      autorEmail: user.email,
     };
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
