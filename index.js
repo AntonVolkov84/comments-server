@@ -24,6 +24,7 @@ app.post("/user/by-email", base.getUserId);
 app.post("/post/createpost", (req, res) => base.createPost(req, res, wss));
 app.get("/posts", base.getPosts);
 app.post("/alter-created-at", base.changeType);
+app.put("/post/like", (req, res) => base.likePost(req, res, wss));
 
 require("./websocket/websocket")(wss);
 

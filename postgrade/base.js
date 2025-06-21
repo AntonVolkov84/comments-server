@@ -1,6 +1,52 @@
 const pool = require("../utils/database");
 const WebSocket = require("ws");
 
+const likePost = async (req, res, wss) => {
+  const { postId } = req.body;
+  if (!postId) {
+    return res.status(400).json({ error: "postId is required" });
+  }
+  try {
+    await pool.query("UPDATE posts SET likescount = likescount + 1 WHERE id = $1", [postId]);
+    const result = await pool.query(
+      `
+      SELECT 
+        posts.id,
+        posts.user_id,
+        posts.text,
+        posts.likescount,
+        posts.created_at,
+        users.username,
+        users.avatar_url,
+        users.homepage,
+        users.email
+      FROM posts
+      JOIN users ON posts.user_id = users.id
+      WHERE posts.id = $1
+    `,
+      [postId]
+    );
+    const updatedPost = result.rows[0];
+    if (!updatedPost) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(
+          JSON.stringify({
+            type: "like_updated",
+            data: updatedPost,
+          })
+        );
+      }
+    });
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error("likePost error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const getUserId = async (req, res) => {
   const { email } = req.body;
 
@@ -104,4 +150,5 @@ module.exports = {
   createPost,
   changeType,
   getPosts,
+  likePost,
 };
