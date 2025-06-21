@@ -20,13 +20,12 @@ const getUserId = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const createPost = async (req, res) => {
   const { user_id, text } = req.body;
-
   if (!user_id || !text) {
     return res.status(400).json({ error: "user_id and text are required" });
   }
-
   try {
     const result = await pool.query(
       `INSERT INTO posts (user_id, text,  likescount)
@@ -34,12 +33,20 @@ const createPost = async (req, res) => {
        RETURNING *`,
       [user_id, text]
     );
-    res.status(201).json(result.rows[0]);
+    const newPost = result.rows[0];
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ type: "new_post", data: newPost }));
+      }
+    });
+
+    res.status(201).json(newPost);
   } catch (error) {
     console.error("DB insert error:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const changeType = async (req, res) => {
   try {
     await pool.query(`
