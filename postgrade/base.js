@@ -8,7 +8,7 @@ const getUserId = async (req, res) => {
   }
 
   try {
-    const result = await pool.query("SELECT id, name, avatar_url, website FROM users WHERE email = $1", [email]);
+    const result = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
