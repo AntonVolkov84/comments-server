@@ -28,10 +28,12 @@ const createPost = async (req, res) => {
   }
 
   try {
-    const result = await pool.query("INSERT INTO posts (user_id, text, likescount) VALUES ($1, $2, 0) RETURNING *", [
-      user_id,
-      text,
-    ]);
+    const result = await pool.query(
+      `INSERT INTO posts (user_id, text, created_at, likescount)
+       VALUES ($1, $2, NOW(), 0)
+       RETURNING *`,
+      [user_id, text]
+    );
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("DB insert error:", error.message);
