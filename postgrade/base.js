@@ -21,7 +21,7 @@ const getUserId = async (req, res) => {
   }
 };
 const createPost = async (req, res) => {
-  const { user_id, text } = req.body;
+  const { user_id, text, created_at } = req.body;
 
   if (!user_id || !text) {
     return res.status(400).json({ error: "user_id and text are required" });
@@ -30,9 +30,9 @@ const createPost = async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO posts (user_id, text, created_at, likescount)
-       VALUES ($1, $2, NOW(), 0)
+       VALUES ($1, $2, $3, 0)
        RETURNING *`,
-      [user_id, text]
+      [user_id, text, created_at]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
