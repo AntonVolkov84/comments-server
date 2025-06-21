@@ -31,7 +31,7 @@ const getPosts = async (req, res) => {
         posts.text,
         posts.likescount,
         posts.created_at,
-        users.nickname,
+        users.username,
         users.avatar_url,
         users.homepage
       FROM posts
@@ -60,12 +60,12 @@ const createPost = async (req, res, wss) => {
     );
 
     const insertedPost = insertResult.rows[0];
-    const userResult = await pool.query(`SELECT nickname, avatar_url, homepage FROM users WHERE id = $1`, [user_id]);
+    const userResult = await pool.query(`SELECT username, avatar_url, homepage FROM users WHERE id = $1`, [user_id]);
     const user = userResult.rows[0];
 
     const fullPost = {
       ...insertedPost,
-      nickname: user.nickname,
+      username: user.username,
       avatar_url: user.avatar_url,
       homepage: user.homepage || null,
     };
