@@ -71,7 +71,7 @@ const createPost = async (req, res, wss) => {
       username: user.username,
       avatar_url: user.avatar_url,
       homepage: user.homepage || null,
-      autorEmail: user.email,
+      email: user.email,
     };
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
