@@ -21,6 +21,7 @@ app.delete("/delete-image", deleteImageFromCloudinary);
 app.post("/users", addToUsers);
 app.put("/users/avatar", updateAvatarUrl);
 app.post("/user/by-email", base.getUserId);
+app.post("/post/createpost", base.createPost);
 
 require("./websocket/websocket")(wss);
 

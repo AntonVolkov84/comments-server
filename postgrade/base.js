@@ -20,7 +20,26 @@ const getUserId = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const createPost = async (req, res) => {
+  const { user_id, text } = req.body;
+
+  if (!user_id || !text) {
+    return res.status(400).json({ error: "user_id and text are required" });
+  }
+
+  try {
+    const result = await pool.query("INSERT INTO posts (user_id, text, likescount) VALUES ($1, $2, 0) RETURNING *", [
+      user_id,
+      text,
+    ]);
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("DB insert error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 module.exports = {
   getUserId,
+  createPost,
 };
