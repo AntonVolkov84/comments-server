@@ -1,4 +1,5 @@
 const pool = require("../utils/database");
+const WebSocket = require("ws");
 
 const getUserId = async (req, res) => {
   const { email } = req.body;

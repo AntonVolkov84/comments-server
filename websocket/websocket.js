@@ -1,3 +1,5 @@
+const WebSocket = require("ws");
+
 module.exports = (wss) => {
   wss.on("connection", (ws) => {
     console.log("New WebSocket connection");
@@ -15,7 +17,7 @@ module.exports = (wss) => {
         data: parsedMessage,
       });
       wss.clients.forEach((client) => {
-        if (client.readyState === ws.OPEN) {
+        if (client.readyState === WebSocket.OPEN) {
           client.send(broadcastMessage);
         }
       });
