@@ -2,11 +2,19 @@ const pool = require("../utils/database");
 const WebSocket = require("ws");
 
 const likePost = async (req, res, wss) => {
-  const { postId } = req.body;
-  if (!postId) {
+  const { postId, userId } = req.body;
+  if (!postId || !userId) {
     return res.status(400).json({ error: "postId is required" });
   }
   try {
+    const likeCheck = await pool.query("SELECT 1 FROM post_likes WHERE user_id = $1 AND post_id = $2", [
+      userId,
+      postId,
+    ]);
+    if (likeCheck.rows.length > 0) {
+      return res.status(400).json({ error: "User has already liked this post" });
+    }
+    await pool.query("INSERT INTO post_likes (user_id, post_id) VALUES ($1, $2)", [userId, postId]);
     await pool.query("UPDATE posts SET likescount = likescount + 1 WHERE id = $1", [postId]);
     const result = await pool.query(
       `
