@@ -21,7 +21,17 @@ const getUserId = async (req, res) => {
   }
 };
 
-const createPost = async (req, res) => {
+const getPosts = async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM posts ORDER BY created_at DESC");
+    res.json(result.rows);
+  } catch (error) {
+    console.error("DB fetch posts error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const createPost = async (req, res, wss) => {
   const { user_id, text } = req.body;
   if (!user_id || !text) {
     return res.status(400).json({ error: "user_id and text are required" });
@@ -65,4 +75,5 @@ module.exports = {
   getUserId,
   createPost,
   changeType,
+  getPosts,
 };
