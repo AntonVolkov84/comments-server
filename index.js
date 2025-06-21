@@ -22,6 +22,7 @@ app.post("/users", addToUsers);
 app.put("/users/avatar", updateAvatarUrl);
 app.post("/user/by-email", base.getUserId);
 app.post("/post/createpost", base.createPost);
+app.post("/alter-created-at", base.changeType);
 
 require("./websocket/websocket")(wss);
 

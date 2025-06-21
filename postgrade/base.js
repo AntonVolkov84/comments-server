@@ -21,7 +21,7 @@ const getUserId = async (req, res) => {
   }
 };
 const createPost = async (req, res) => {
-  const { user_id, text, created_at } = req.body;
+  const { user_id, text } = req.body;
 
   if (!user_id || !text) {
     return res.status(400).json({ error: "user_id and text are required" });
@@ -29,8 +29,8 @@ const createPost = async (req, res) => {
 
   try {
     const result = await pool.query(
-      `INSERT INTO posts (user_id, text, created_at, likescount)
-       VALUES ($1, $2, $3, 0)
+      `INSERT INTO posts (user_id, text,  likescount)
+       VALUES ($1, $2, 0)
        RETURNING *`,
       [user_id, text, created_at]
     );
@@ -40,8 +40,22 @@ const createPost = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const changeType = async (req, res) => {
+  try {
+    await pool.query(`
+      ALTER TABLE posts
+      ALTER COLUMN created_at TYPE TIMESTAMP USING created_at::timestamp,
+      ALTER COLUMN created_at SET DEFAULT NOW()
+    `);
+    res.status(200).json({ message: "Column created_at altered successfully" });
+  } catch (error) {
+    console.error("Error altering column:", error.message);
+    res.status(500).json({ error: "Failed to alter column" });
+  }
+};
 
 module.exports = {
   getUserId,
   createPost,
+  changeType,
 };
