@@ -32,7 +32,7 @@ const createPost = async (req, res) => {
       `INSERT INTO posts (user_id, text,  likescount)
        VALUES ($1, $2, 0)
        RETURNING *`,
-      [user_id, text, created_at]
+      [user_id, text]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
