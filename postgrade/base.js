@@ -134,14 +134,20 @@ const createPost = async (req, res, wss) => {
 const changeType = async (req, res) => {
   try {
     await pool.query(`
-      ALTER TABLE posts
-      ALTER COLUMN created_at TYPE TIMESTAMP USING created_at::timestamp,
-      ALTER COLUMN created_at SET DEFAULT NOW()
+      ALTER TABLE post_likes
+        DROP CONSTRAINT IF EXISTS post_likes_pkey;
+
+      ALTER TABLE post_likes
+        ADD PRIMARY KEY (user_id, post_id);
+
+      ALTER TABLE post_likes
+        ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+        ADD CONSTRAINT fk_post FOREIGN KEY (post_id) REFERENCES posts(id);
     `);
-    res.status(200).json({ message: "Column created_at altered successfully" });
+    res.status(200).json({ message: "post_likes keys altered successfully" });
   } catch (error) {
-    console.error("Error altering column:", error.message);
-    res.status(500).json({ error: "Failed to alter column" });
+    console.error("Error altering post_likes keys:", error.message);
+    res.status(500).json({ error: "Failed to alter post_likes keys" });
   }
 };
 
