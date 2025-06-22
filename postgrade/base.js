@@ -171,6 +171,7 @@ const createComment = async (req, res) => {
        RETURNING *`,
       [text, post_id, author_id, file_uri || null, photo_uri || null]
     );
+    await pool.query(`UPDATE posts SET created_at = NOW() WHERE id = $1`, [post_id]);
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
