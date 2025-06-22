@@ -142,20 +142,27 @@ const createPost = async (req, res, wss) => {
 const changeType = async (req, res) => {
   try {
     await pool.query(`
-      ALTER TABLE post_likes
-        DROP CONSTRAINT IF EXISTS post_likes_pkey;
+      CREATE TABLE IF NOT EXISTS comments (
+        id SERIAL PRIMARY KEY,
+        post_id INTEGER NOT NULL,
+        author_id INTEGER NOT NULL,
+        text TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
 
-      ALTER TABLE post_likes
-        ADD PRIMARY KEY (user_id, post_id);
+      ALTER TABLE comments
+        DROP CONSTRAINT IF EXISTS fk_comment_post,
+        DROP CONSTRAINT IF EXISTS fk_comment_author;
 
-      ALTER TABLE post_likes
-        ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
-        ADD CONSTRAINT fk_post FOREIGN KEY (post_id) REFERENCES posts(id);
+      ALTER TABLE comments
+        ADD CONSTRAINT fk_comment_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+        ADD CONSTRAINT fk_comment_author FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE;
     `);
-    res.status(200).json({ message: "post_likes keys altered successfully" });
+
+    res.status(200).json({ message: "comments table created/updated successfully" });
   } catch (error) {
-    console.error("Error altering post_likes keys:", error.message);
-    res.status(500).json({ error: "Failed to alter post_likes keys" });
+    console.error("Error creating comments table:", error.message);
+    res.status(500).json({ error: "Failed to create comments table" });
   }
 };
 
