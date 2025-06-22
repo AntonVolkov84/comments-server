@@ -49,6 +49,7 @@ module.exports = (wss) => {
   wss.broadcastNewComment = (comment) => {
     const postId = comment.post_id;
     const clients = postSubscriptions.get(postId);
+    console.log(`Broadcasting comment to post ${postId}, clients: ${clients?.size || 0}`);
     if (!clients) return;
     const message = JSON.stringify({
       type: "new_comment",
