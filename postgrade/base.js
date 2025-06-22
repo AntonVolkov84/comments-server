@@ -180,7 +180,27 @@ const createComment = async (req, res, wss) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const getCommentsByPostId = async (req, res) => {
+  const { post_id } = req.body;
 
+  if (!post_id) {
+    return res.status(400).json({ error: "post_id is required" });
+  }
+  try {
+    const result = await pool.query(
+      `SELECT comments.*, users.username, users.avatar_url, users.email, users.homepage
+       FROM comments
+       JOIN users ON comments.author_id = users.id
+       WHERE post_id = $1
+       ORDER BY created_at DESC`,
+      [post_id]
+    );
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Ошибка получения комментариев:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 const changeType = async (req, res) => {
   try {
     await pool.query(`
@@ -216,4 +236,5 @@ module.exports = {
   likePost,
   getUser,
   createComment,
+  getCommentsByPostId,
 };

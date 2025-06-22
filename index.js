@@ -25,6 +25,7 @@ app.post("/users/getUser", base.getUser);
 app.post("/post/createpost", (req, res) => base.createPost(req, res, wss));
 app.get("/posts", base.getPosts);
 app.post("/comments/create", (req, res) => base.createComment(req, res, wss));
+app.post("/commeby-postnts/create", base.getCommentsByPostId);
 app.post("/alter-created-at", base.changeType);
 app.put("/post/like", (req, res) => base.likePost(req, res, wss));
 
