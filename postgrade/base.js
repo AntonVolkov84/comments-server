@@ -173,7 +173,18 @@ const createComment = async (req, res, wss) => {
     );
     await pool.query(`UPDATE posts SET created_at = NOW() WHERE id = $1`, [post_id]);
     const newComment = result.rows[0];
-    wss.broadcastNewComment(newComment);
+    const userResult = await pool.query(`SELECT username, avatar_url, homepage, email FROM users WHERE id = $1`, [
+      author_id,
+    ]);
+    const user = userResult.rows[0];
+    const enrichedComment = {
+      ...newComment,
+      username: user.username,
+      avatar_url: user.avatar_url,
+      homepage: user.homepage,
+      email: user.email,
+    };
+    wss.broadcastNewComment(enrichedComment);
     res.status(201).json(newComment);
   } catch (error) {
     console.error("Ошибка создания комментария:", error.message);
