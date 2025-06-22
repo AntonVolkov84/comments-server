@@ -157,6 +157,27 @@ const createPost = async (req, res, wss) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const createComment = async (req, res) => {
+  const { text, post_id, author_id, file_uri, photo_uri } = req.body;
+
+  if (!text || !post_id || !author_id) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO comments (text, post_id, author_id, created_at, file_uri, photo_uri)
+       VALUES ($1, $2, $3, NOW(), $4, $5)
+       RETURNING *`,
+      [text, post_id, author_id, file_uri || null, photo_uri || null]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error("Ошибка создания комментария:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 const changeType = async (req, res) => {
   try {
@@ -192,4 +213,5 @@ module.exports = {
   getPosts,
   likePost,
   getUser,
+  createComment,
 };
