@@ -157,7 +157,7 @@ const createPost = async (req, res, wss) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-const createComment = async (req, res) => {
+const createComment = async (req, res, wss) => {
   const { text, post_id, author_id, file_uri, photo_uri } = req.body;
 
   if (!text || !post_id || !author_id) {
@@ -172,8 +172,9 @@ const createComment = async (req, res) => {
       [text, post_id, author_id, file_uri || null, photo_uri || null]
     );
     await pool.query(`UPDATE posts SET created_at = NOW() WHERE id = $1`, [post_id]);
-
-    res.status(201).json(result.rows[0]);
+    const newComment = result.rows[0];
+    wss.broadcastNewComment(newComment);
+    res.status(201).json(newComment);
   } catch (error) {
     console.error("Ошибка создания комментария:", error.message);
     res.status(500).json({ error: "Internal server error" });
