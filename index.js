@@ -21,6 +21,7 @@ app.delete("/delete-image", deleteImageFromCloudinary);
 app.post("/users", addToUsers);
 app.get("/users/getallUsers", base.getAllUsers);
 app.get("/post/likes", base.getAllLinkedLikes);
+app.get("/comments/getAllComments", base.getAllComments);
 app.put("/users/avatar", updateAvatarUrl);
 app.post("/user/by-email", base.getUserId);
 app.post("/users/getUser", base.getUser);
