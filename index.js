@@ -19,7 +19,7 @@ app.use(express.json());
 
 app.delete("/delete-image", deleteImageFromCloudinary);
 app.post("/users", addToUsers);
-app.get("/users/getallUsers", addToUsers);
+app.get("/users/getallUsers", base.getAllUsers);
 app.put("/users/avatar", updateAvatarUrl);
 app.post("/user/by-email", base.getUserId);
 app.post("/users/getUser", base.getUser);

@@ -261,4 +261,5 @@ module.exports = {
   getUser,
   createComment,
   getCommentsByPostId,
+  getAllUsers,
 };
