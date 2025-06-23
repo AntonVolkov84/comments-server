@@ -171,7 +171,7 @@ const createPost = async (req, res, wss) => {
   }
 };
 const createComment = async (req, res, wss) => {
-  const { text, post_id, author_id, file_uri, photo_uri } = req.body;
+  const { text, post_id, author_id, photo_uri, file_uri } = req.body;
 
   if (!text || !post_id || !author_id) {
     return res.status(400).json({ error: "Missing required fields" });
