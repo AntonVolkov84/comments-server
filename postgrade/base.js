@@ -229,13 +229,9 @@ const getAllLinkedLikes = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
-        post_likes.user_id,
-        post_likes.post_id,
-        users.username,
-        posts.text AS post_text
+        user_id,
+        post_id
       FROM post_likes
-      JOIN users ON post_likes.user_id = users.id
-      JOIN posts ON post_likes.post_id = posts.id
     `);
     res.json(result.rows);
   } catch (error) {
