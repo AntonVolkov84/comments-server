@@ -118,6 +118,19 @@ const getPosts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const getAllUsers = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, email, username, avatar_url, created_at, homepage
+      FROM users
+      ORDER BY created_at DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("DB fetch users error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 const createPost = async (req, res, wss) => {
   const { user_id, text } = req.body;
