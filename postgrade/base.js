@@ -239,6 +239,25 @@ const getAllLinkedLikes = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const getAllComments = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        id,
+        post_id,
+        author_id,
+        text,
+        created_at,
+        file_uri,
+        photo_uri
+      FROM comments
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    console.error("DB fetch comments error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 const changeType = async (req, res) => {
   try {
     await pool.query(`
@@ -277,4 +296,5 @@ module.exports = {
   getCommentsByPostId,
   getAllUsers,
   getAllLinkedLikes,
+  getAllComments,
 };
