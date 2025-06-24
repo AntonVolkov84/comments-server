@@ -216,7 +216,7 @@ const getCommentsByPostId = async (req, res) => {
        FROM comments
        JOIN users ON comments.author_id = users.id
        WHERE post_id = $1
-       ORDER BY created_at DESC`,
+       ORDER BY created_at ASC`,
       [post_id]
     );
     res.status(200).json(result.rows);
