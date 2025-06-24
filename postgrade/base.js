@@ -251,6 +251,7 @@ const getAllComments = async (req, res) => {
         file_uri,
         photo_uri
       FROM comments
+      ORDER BY created_at ASC;
     `);
     res.json(result.rows);
   } catch (error) {
