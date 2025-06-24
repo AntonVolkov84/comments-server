@@ -206,6 +206,9 @@ const createComment = async (req, res, wss) => {
 };
 const getCommentsByPostId = async (req, res) => {
   const { post_id } = req.body;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 25;
+  const offset = (page - 1) * limit;
 
   if (!post_id) {
     return res.status(400).json({ error: "post_id is required" });
@@ -216,10 +219,22 @@ const getCommentsByPostId = async (req, res) => {
        FROM comments
        JOIN users ON comments.author_id = users.id
        WHERE post_id = $1
-       ORDER BY created_at ASC`,
-      [post_id]
+       ORDER BY created_at ASC
+       LIMIT $2 OFFSET $3`,
+      [post_id, limit, offset]
     );
-    res.status(200).json(result.rows);
+    const countResult = await pool.query(`SELECT COUNT(*) FROM comments WHERE post_id = $1`, [post_id]);
+    const total = parseInt(countResult.rows[0].count);
+    const totalPages = Math.ceil(total / limit);
+    res.status(200).json({
+      data: result.rows,
+      pagination: {
+        total,
+        page,
+        totalPages,
+        hasMore: page < totalPages,
+      },
+    });
   } catch (error) {
     console.error("Ошибка получения комментариев:", error.message);
     res.status(500).json({ error: "Internal server error" });
